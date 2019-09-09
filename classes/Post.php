@@ -67,7 +67,7 @@ class Post {
     public static function all()
     {
         $dbh = new DBConnect();
-        $sth = $dbh->prepare('SELECT * FROM `posts`');
+        $sth = $dbh->prepare('SELECT * FROM `posts` ORDER BY `created_at` DESC');
         $sth->execute();
         $result = $sth->fetchAll(PDO::FETCH_ASSOC);
         return $result;
@@ -75,11 +75,11 @@ class Post {
 
     /**
      * read all Post's from database and
-     * converts 2-dimentional array of Posts to Xml string
+     * converts 2-dimentional array of Posts to Xml
      * add Comments number to each Post
      * @return SimpleXMLElement
      */
-    public static function allAsXml()
+    public static function postsAsXml()
     {
         $posts = self::all();
         $commentsNum = self::getCommentNumber();
@@ -89,7 +89,36 @@ class Post {
             foreach ($post as $key => $value) {
                 $xmlPost->addChild($key, $value);
             }
-            $xmlPost->addChild('comments', $commentsNum[$post['id']]);
+            if(array_key_exists($post['id'], $commentsNum))
+            {
+                $xmlPost->addChild('comments', $commentsNum[$post['id']]);
+            }
+            else {
+                $xmlPost->addChild('comments', 0);
+            }
+        }
+        return $xml;
+    }
+    
+    /**
+     * read Post from database and
+     * add all Comments  to Post 
+     * converts 2-dimentional array of Comments to Xml
+     * @return SimpleXMLElement
+     */
+    public function asXml()
+    {
+        $xml = new SimpleXMLElement('<post/>');
+        $xml->addChild('id', $this->id);
+        $xml->addChild('title', $this->title);
+        $xml->addChild('text', $this->text);
+        $xml->addChild('created_at', $this->created_at);
+        $xml->addChild('comments', count($this->comments));
+        foreach ($this->comments as $comment) {
+            $xmlComment = $xml->addChild('comment');           
+            foreach ($comment as $key => $value) {
+                 $xmlComment->addChild($key, $value);
+            }
         }
         return $xml;
     }
@@ -113,14 +142,14 @@ class Post {
     
     /**
      * read Post's children Comments from database
-     * @return array of Comment's Ids
+     * @return array of Comments
      */
     public function comments()
     {
         $dbh = new DBConnect();
-        $sth = $dbh->prepare('SELECT `id` FROM `comments` WHERE `post_id` = ' . $this->id);
+        $sth = $dbh->prepare('SELECT * FROM `comments` WHERE `post_id` = "' . $this->id . '" ORDER BY `created_at` DESC');
         $sth->execute();
-        $result = $sth->fetchAll(PDO::FETCH_COLUMN, 0);
+        $result = $sth->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
     

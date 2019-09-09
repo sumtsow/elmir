@@ -8,25 +8,38 @@
         <head>
             <title>Мини-блог</title>
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
-            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-       </head>
-      <body>
-         <h1 class="text-center">Мини-блог</h1>
-         <div class="container">
-            <xsl:apply-templates select="posts"> </xsl:apply-templates>
+            <!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> -->
+        </head>
+        <body>
+        <nav class="navbar navbar-dark bg-dark">
+            <a class="navbar-brand" href="/">Главная</a>
+        </nav>
+        <h1 class="text-center">Мини-блог</h1>
+        <div class="container">
+            
+           <!--  Pagination -->
+           <xsl:variable name="postsTotal"  select="count(posts/post)" />
+           <xsl:variable name="postsPerPage"  select="10" />
+            <xsl:for-each select="posts/post">
+                <xsl:if test="position() &lt;= $postsPerPage">
+                    <xsl:call-template name="post" />
+                </xsl:if>
+            </xsl:for-each>
+            <!-- Pagination end -->
+            
          </div>
       </body>
     </html>
 </xsl:template>
 
-<xsl:template match="posts/post">
+<xsl:template name="post">
    <div class="card border-dark mb-3">
       <xsl:apply-templates select="title" />
       <xsl:apply-templates select="text" />
 
       <div class="card-footer text-right">
         <xsl:apply-templates select="created_at" />
-        <a href="/post/{id}">
+        <a href="/post.php?id={id}">
             <xsl:apply-templates select="comments" />
         </a>
       </div>
@@ -58,7 +71,7 @@
 
 <xsl:template match="comments">
     <xsl:text> Комментариев: </xsl:text>
-    <xsl:apply-templates />
+        <xsl:apply-templates />
 </xsl:template>
 
 </xsl:stylesheet>

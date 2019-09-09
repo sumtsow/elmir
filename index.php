@@ -2,10 +2,10 @@
 
 require_once 'classes/Post.php';
 
-$xml = Post::allAsXml();
+$xml = Post::postsAsXml();
 
 $xslt = new xsltProcessor;
 
-$xslt->importStyleSheet(DomDocument::load('posts.xsl'));
+$xslt->importStyleSheet(DomDocument::load('tpl/posts.xsl'));
 
 echo $xslt->transformToXML($xml);
