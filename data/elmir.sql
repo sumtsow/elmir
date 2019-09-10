@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost
--- Время создания: Сен 10 2019 г., 00:58
+-- Время создания: Сен 10 2019 г., 23:51
 -- Версия сервера: 5.7.27-0ubuntu0.18.04.1
 -- Версия PHP: 5.6.40-12+ubuntu18.04.1+deb.sury.org+1
 
@@ -46,7 +46,12 @@ INSERT INTO `comments` (`id`, `post_id`, `author`, `text`, `ip`, `created_at`) V
 (2, 1, 'user 2', 'comment #2', '127.0.0.1', '2019-09-07 20:00:01'),
 (3, 2, 'user 3', 'comment #3', '127.0.0.1', '2019-09-07 20:00:02'),
 (4, 2, 'user 4', 'comment #4', '127.0.0.1', '2019-09-07 20:00:03'),
-(5, 2, 'user 5', 'comment #5', '127.0.0.1', '2019-09-07 22:00:00');
+(5, 2, 'user 5', 'comment #5', '127.0.0.1', '2019-09-07 22:00:00'),
+(6, 21, 'user 6', 'comment #6', '127.0.0.1', '2019-09-10 16:30:00'),
+(7, 1, 'user 7', 'comment #7', '127.0.0.1', '2019-09-10 20:14:20'),
+(8, 21, 'user 8', 'comment #8', '127.0.0.1', '2019-09-10 20:17:39'),
+(9, 11, 'nobody', 'Hello, Dolly!', '127.0.0.1', '2019-09-10 22:58:12'),
+(10, 20, 'Гость', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\r\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\r\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', '127.0.0.1', '2019-09-10 23:21:15');
 
 -- --------------------------------------------------------
 
@@ -113,7 +118,7 @@ ALTER TABLE `posts`
 -- AUTO_INCREMENT для таблицы `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT для таблицы `posts`

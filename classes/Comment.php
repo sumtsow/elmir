@@ -40,55 +40,54 @@ class Comment {
     private $created_at;    
     
     /**
-     * read Comment attributes from database with specified ID
-     * @param integer $id Comment ID
-     * @return boolean TRUE if Comment exists FALSE otherwise
+     * creates new Comment object
+     * and set $this->created_at to current DateTime
+     * and set $this->ip to client IP address
+     * @return boolean TRUE if Comment created FALSE otherwise
      */
-    public function __construct($id = null)
+    public function __construct()
     {
-        if($id)
-        {
-            $dbh = new DBConnect();
-            $sth = $dbh->prepare('SELECT * FROM `comments` WHERE `id`="'.$id.'"');
-            $sth->execute();
-            $result = $sth->fetch();
-            $this->id = $result['id'];
-            $this->post_id = $result['post_id'];
-            $this->author = $result['author'];
-            $this->text = $result['text'];
-            $this->ip = $result['ip'];
-            $this->created_at = $result['created_at'];
-            return true;
-        }
-        else {
-            $this->id = null;
-            $this->post_id = null;
-            $this->author = '';
-            $this->text = '';
-            $this->ip = '';
-            $this->created_at = date('Y-m-d H:i:s');
-            return false;
-        }
+        $this->created_at = date('Y-m-d H:i:s');
+        $this->ip = $_SERVER['REMOTE_ADDR'];
+        return true;
     }
 
     /**
-     * read all Comments from database
-     * @param int $post_id
-     * @return array of Comments
+     * save Comment attributes to database
+     * @return boolean TRUE if data saved successfull FALSE otherwise
      */
-    public static function all($post_id = null)
+    public function save()
     {
         $dbh = new DBConnect();
-        if(is_int($post_id))
+        if( isset($this->post_id) &&
+            isset($this->author) &&
+            isset($this->text) &&
+            isset($this->created_at) &&
+            isset($this->ip))
         {
-            $sth = $dbh->prepare('SELECT * FROM `posts` WHERE `post_id` = "'.$post_id.'"');
+            $sth = $dbh->prepare('INSERT INTO `comments` (`id`, `post_id`, `author`, `text`, `ip`, `created_at`) VALUES (NULL, "'.$this->post_id.'", "'.$this->author.'", "'.$this->text.'", "'.$this->ip.'", "'.$this->created_at.'")');
+            return $sth->execute();
         }
-         else {
-            $sth = $dbh->prepare('SELECT * FROM `posts`');             
-         }
-        $sth->execute();
-        $result = $sth->fetchAll();
-        return $result;
+        
+        return false;
     }
     
+    /**
+     * magic function
+     * set specified attribute to value
+     * @param string $attr attribute name
+     * @param string $value attribute value
+     * @return boolean TRUE if set or FALSE otherwise
+     */
+    public function __set($attr, $value)
+    {
+        $result = false;
+        if(property_exists('Comment', $attr))
+        {
+            $this->$attr = $value;
+            $result = true;
+        }
+        
+        return $result;
+    }
 }

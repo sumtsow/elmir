@@ -59,38 +59,59 @@ class Post {
             return false;
         }
     }
-
+    
     /**
-     * read all Post's from database
-     * @return array of Post's
+     * read  $itemsPerPage Posts from database
+     * @param integer $page current page number
+     * @param integer $itemsPerPage page size
+     * @return array of Posts
      */
-    public static function all()
+    public static function all($page = null, $itemsPerPage = 10)
     {
+        $postsNum = self::count();
+        $offset = ($page * $itemsPerPage < $postsNum) ? $page * $itemsPerPage : 0;
         $dbh = new DBConnect();
-        $sth = $dbh->prepare('SELECT * FROM `posts` ORDER BY `created_at` DESC');
+        $sth = $dbh->prepare('SELECT * FROM `posts` ORDER BY `created_at` DESC LIMIT '.$itemsPerPage.' OFFSET '.$offset);
         $sth->execute();
         $result = $sth->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
 
     /**
-     * read all Post's from database and
+     * @return total Posts count
+     */
+    public static function count()
+    {
+        $dbh = new DBConnect();
+        $sth = $dbh->prepare('SELECT COUNT(*) FROM `posts`');
+        $sth->execute();
+        $postsNum = $sth->fetchAll(PDO::FETCH_COLUMN, 0);
+        return $postsNum[0];
+    }
+
+    /**
+     * read $itemsPerPage Posts from database and
      * converts 2-dimentional array of Posts to Xml
      * add Comments number to each Post
+     * @param int $page
+     * 
      * @return SimpleXMLElement
      */
-    public static function postsAsXml()
+    public static function postsAsXml($page = null)
     {
-        $posts = self::all();
+        $settings = DBConnect::getConfig();
+        $itemsPerPage = $settings['db']['itemsPerPage'];
         $commentsNum = self::getCommentNumber();
         $xml = new SimpleXMLElement('<posts/>');
-        foreach ($posts as $post) {
+        $xml->addChild('page', $page);
+        $xml->addChild('count', self::count());
+        $xml->addChild('itemsPerPage', $itemsPerPage);
+        foreach (self::all($page, $itemsPerPage) as $post) {
             $xmlPost = $xml->addChild('post');
             foreach ($post as $key => $value) {
                 $xmlPost->addChild($key, $value);
             }
-            if(array_key_exists($post['id'], $commentsNum))
-            {
+            if(array_key_exists($post['id'], $commentsNum)) {
                 $xmlPost->addChild('comments', $commentsNum[$post['id']]);
             }
             else {
@@ -150,6 +171,9 @@ class Post {
         $sth = $dbh->prepare('SELECT * FROM `comments` WHERE `post_id` = "' . $this->id . '" ORDER BY `created_at` DESC');
         $sth->execute();
         $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+        foreach($result as $key => $comment) {
+            $result[$key]['text'] = nl2br($result[$key]['text'], true);
+        }
         return $result;
     }
     
@@ -170,25 +194,5 @@ class Post {
             return false;
         }
     }
-
-    /**
-     * magic function
-     * set specified attribute to value
-     * @param string $attr attribute name
-     * @param string $attr attribute name
-     * @return array of Post's Ids
-     */
-    /*public function __set($attr, $value)
-    {
-        if(property_exists('Post', $attr))
-        {
-            $this->$attr = $value;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }*/
-    
+   
 }

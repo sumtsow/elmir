@@ -4,13 +4,14 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform" >
     
 <xsl:output method="html"/>
+<xsl:include href="links.xsl"/>
+<xsl:include href="pagination.xsl"/>
 
 <xsl:template match="/">
     <html>
         <head>
             <title>Мини-блог</title>
-            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
-            <!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> -->
+            <xsl:call-template name="links"> </xsl:call-template>
         </head>
         <body>
         <nav class="navbar navbar-dark bg-dark">
@@ -18,23 +19,15 @@
         </nav>
         <h1 class="text-center">Мини-блог</h1>
         <div class="container">
-            
-           <!--  Pagination -->
-           <xsl:variable name="postsTotal"  select="count(posts/post)" />
-           <xsl:variable name="postsPerPage"  select="10" />
-            <xsl:for-each select="posts/post">
-                <xsl:if test="position() &lt;= $postsPerPage">
-                    <xsl:call-template name="post" />
-                </xsl:if>
-            </xsl:for-each>
-            <!-- Pagination end -->
-            
+            <xsl:call-template name="pagination"> </xsl:call-template>
+            <xsl:apply-templates select="posts/post" />
+            <xsl:call-template name="pagination"> </xsl:call-template>
          </div>
       </body>
     </html>
 </xsl:template>
 
-<xsl:template name="post">
+<xsl:template match="post">
    <div class="card border-dark mb-3">
       <xsl:apply-templates select="title" />
       <xsl:apply-templates select="text" />

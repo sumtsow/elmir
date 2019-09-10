@@ -2,7 +2,10 @@
 
 require_once 'classes/Post.php';
 
-$xml = Post::postsAsXml();
+// добавить регулярное выражение
+$page = (int) @strip_tags(@htmlspecialchars($_GET['page']));
+
+$xml = Post::postsAsXml($page);
 
 $xslt = new xsltProcessor;
 

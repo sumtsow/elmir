@@ -2,16 +2,26 @@
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
     
-    <xsl:output method="html"/>
+    <xsl:output method="html" />
     
     <xsl:template name="form">
-        <form>
+        <!-- Form -->
+        <h4 class="h4">Оставить комментарий </h4>
+        <form method="post" action="" id="commentSender">
             <div class="form-group">
-                <label for="newComment">Email address</label>
-                <input type="textarea" class="form-control" id="newComment" placeholder="Enter your comment" />
+                <label for="author">Ваше имя: </label>
+                <input type="text" class="form-control" name="author" id="author" />
+            </div>            
+            <div class="form-group">
+                <label for="text">Ваш комментарий: </label>
+                <textarea class="form-control" name="text" id="text" />
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <input type="hidden" name="_csrf" value="111"/>
+            <input type="hidden" name="post_id" value="{post/id}"/>            
+            <input type="submit" id="btn" class="btn btn-dark" value="Save" />
         </form>
+        <div id="sendResult"></div>
+        <!-- Form end -->
     </xsl:template>
     
 </xsl:stylesheet>
