@@ -2,6 +2,10 @@
 
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform" >
+    
+<xsl:output method="html"/>
+
+<xsl:include href="form.xsl"/>
 
 <xsl:template match="/">
     <html>
@@ -11,27 +15,28 @@
             <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
         </head>
         <body>
-        <nav class="navbar navbar-dark bg-dark">
-            <a class="navbar-brand" href="/">Главная</a>
-        </nav>
-         <h1 class="text-center">Мини-блог</h1>
-         <div class="container">
-            <xsl:apply-templates select="post"> </xsl:apply-templates>
-            <xsl:apply-templates select="post/comment"> </xsl:apply-templates>
-         </div>
-      </body>
+            <nav class="navbar navbar-dark bg-dark">
+                <a class="navbar-brand" href="/">Главная</a>
+            </nav>
+            <h1 class="text-center">Мини-блог</h1>
+            <div class="container">
+                <xsl:apply-templates select="post"> </xsl:apply-templates>
+                <xsl:apply-templates select="post/comment"> </xsl:apply-templates>
+                <xsl:apply-templates select="form"> </xsl:apply-templates>
+            </div>
+        </body>
     </html>
 </xsl:template>
 
 <xsl:template match="post">
-        <xsl:apply-templates select="title" />
-        <xsl:apply-templates select="created_at" />
-        <div class="row mb-3">
-            <div class="col">
-                <xsl:apply-templates select="text" />                
-            </div>
+    <xsl:apply-templates select="title" />
+    <xsl:apply-templates select="created_at" />
+    <div class="row mb-3">
+        <div class="col">
+            <xsl:apply-templates select="text" />                
         </div>
-        <xsl:apply-templates select="comments" />        
+    </div>
+    <xsl:apply-templates select="comments" />        
 </xsl:template>
 
 <xsl:template match="post/title">
