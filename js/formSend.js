@@ -15,8 +15,10 @@ function sendForm(sendResult, commentSender, url) {
         data: $("#"+commentSender).serialize(),
         success: function(response) {
         	result = $.parseJSON(response);
+                var date = new Date(result.created_at);
+                var formattedDate = date.getDate()+'.'+(date.getMonth()+1)+'.'+date.getFullYear()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
         	$('#sendResult').html('Комментарий пользователя "'+result.author+'" отправлен');
-                $('#empty').html('<div class="card border-dark mb-3"><div class="card-header bg-dark text-light"><span class="font-weight-bold">'+result.author+'</span> в '+result.created_at+' ( с IP: '+result.ip+' )</div><div class="card-body"><p class="card-text">'+result.text+'</p></div></div>' + $('#empty').html());
+                $('#empty').html('<div class="card border-dark mb-3"><div class="card-header bg-dark text-light"><span class="font-weight-bold">'+result.author+'</span> в '+formattedDate+' ( с IP: '+result.ip+' )</div><div class="card-body"><p class="card-text">'+result.text+'</p></div></div>' + $('#empty').html());
                 var length = $('#commentsNum').text().length-1;
                 var digits = $('#commentsNum').text().lastIndexOf('#20');
                 var counter = Number($('#commentsNum').text().substr(digits)) + 1;
