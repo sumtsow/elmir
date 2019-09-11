@@ -22,6 +22,7 @@
             <h1 class="text-center">Мини-блог</h1>
             <div class="container">
                 <xsl:apply-templates select="post"> </xsl:apply-templates>
+                <div id="empty"></div>
                 <xsl:apply-templates select="post/comment"> </xsl:apply-templates>
                 <xsl:call-template name="form"> </xsl:call-template>
             </div>
@@ -65,7 +66,7 @@
 </xsl:template>
 
 <xsl:template match="post/comments">
-    <h6 class="h6">
+    <h6 class="h6" id="commentsNum">
         <xsl:text> Комментариев: </xsl:text>
         <xsl:apply-templates />
     </h6>

@@ -109,14 +109,12 @@ class Post {
         foreach (self::all($page, $itemsPerPage) as $post) {
             $xmlPost = $xml->addChild('post');
             foreach ($post as $key => $value) {
+                if($key == 'text') {
+                    $value = nl2br($value, true);
+                }                
                 $xmlPost->addChild($key, $value);
             }
-            if(array_key_exists($post['id'], $commentsNum)) {
-                $xmlPost->addChild('comments', $commentsNum[$post['id']]);
-            }
-            else {
-                $xmlPost->addChild('comments', 0);
-            }
+            (array_key_exists($post['id'], $commentsNum)) ? $xmlPost->addChild('comments', $commentsNum[$post['id']]) : $xmlPost->addChild('comments', 0);
         }
         return $xml;
     }

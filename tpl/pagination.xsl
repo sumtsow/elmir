@@ -10,12 +10,12 @@
             <ul class="pagination justify-content-end">
                 <xsl:if test="number(posts/page)-1 &gt;= 0">                    
                     <li class="page-item mr-3">
-                        <a class="page-link" href="?page={number(posts/page)-1}">&lt;&lt; Назад</a>
+                        <a class="page-link" href="?page={number(posts/page)-1}">&#171;Назад</a>
                     </li>
                 </xsl:if>
-                <xsl:if test="number(posts/page) * number(posts/itemsPerPage) &lt; number(posts/count)">
+                <xsl:if test="(number(posts/page)+1) * number(posts/itemsPerPage) &lt; number(posts/count)">
                     <li class="page-item">
-                        <a class="page-link" href="?page={number(posts/page)+1}">Вперед &gt;&gt;</a>
+                        <a class="page-link" href="?page={number(posts/page)+1}">Вперед&#187;</a>
                     </li>
                 </xsl:if>                        
             </ul>

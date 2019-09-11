@@ -73,6 +73,22 @@ class Comment {
     }
     
     /**
+     * @return string client PI address
+     */
+    public function getIP()
+    {
+        return $this->ip;
+    }
+        
+    /**
+     * @return DateTime Comment creation date&time
+     */
+    public function getCreatedAt()
+    {
+        return $this->created_at;
+    }
+    
+    /**
      * magic function
      * set specified attribute to value
      * @param string $attr attribute name

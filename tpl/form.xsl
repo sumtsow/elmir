@@ -16,7 +16,6 @@
                 <label for="text">Ваш комментарий: </label>
                 <textarea class="form-control" name="text" id="text" />
             </div>
-            <input type="hidden" name="_csrf" value="111"/>
             <input type="hidden" name="post_id" value="{post/id}"/>            
             <input type="submit" id="btn" class="btn btn-dark" value="Save" />
         </form>
