@@ -65,7 +65,12 @@ class Comment {
             isset($this->created_at) &&
             isset($this->ip))
         {
-            $sth = $dbh->prepare('INSERT INTO `comments` (`id`, `post_id`, `author`, `text`, `ip`, `created_at`) VALUES (NULL, "'.$this->post_id.'", "'.$this->author.'", "'.$this->text.'", "'.$this->ip.'", "'.$this->created_at.'")');
+            $sth = $dbh->prepare('INSERT INTO `comments` (`id`, `post_id`, `author`, `text`, `ip`, `created_at`) VALUES (NULL, ?, ?, ?, ?, ?)');
+            $sth->bindParam(1, $this->post_id, PDO::PARAM_INT);
+            $sth->bindParam(2, $this->author, PDO::PARAM_STR, 128);
+            $sth->bindParam(3, $this->text, PDO::PARAM_STR);
+            $sth->bindParam(4, $this->ip, PDO::PARAM_STR, 16);             
+            $sth->bindParam(5, $this->created_at);
             return $sth->execute();
         }
         

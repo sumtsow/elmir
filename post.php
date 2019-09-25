@@ -2,7 +2,7 @@
 
 require_once 'classes/Post.php';
 
-$id = (isset($_GET['id'])) ? preg_replace("/[^0-9]/", '', $_GET['id']) : 0;
+$id = (isset($_GET['id'])) ? filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT) : 0;
 
 if(!$id) {
     header('Location: /');

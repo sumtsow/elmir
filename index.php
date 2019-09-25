@@ -2,7 +2,7 @@
 
 require_once 'classes/Post.php';
 
-$page = (isset($_GET['page'])) ? preg_replace("/[^0-9]/", '', $_GET['page']) : 0;
+$page = (isset($_GET['page'])) ? filter_input(INPUT_GET, 'page', FILTER_SANITIZE_NUMBER_INT) : 0;
 
 $xml = Post::postsAsXml($page);
 
