@@ -20,7 +20,11 @@ $xml = $post->asXml();
 
 $xslt = new xsltProcessor;
 
-$xslt->importStyleSheet(DomDocument::load('tpl/post.xsl'));
+$doc = new DOMDocument();
+
+$doc->load('tpl/post.xsl');
+
+$xslt->importStyleSheet($doc);
 
 $output = $xslt->transformToXML($xml);
 

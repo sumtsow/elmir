@@ -1,19 +1,14 @@
-/*function() {
+$( document ).ready(function() {
     $("#btn").click(
 		function(){
 			sendForm('sendResult', 'commentSender', 'save.php');
 			return false; 
 		}
 	);
-});*/
+});
  
-function sendForm() {
-    let form = document.querySelector('#commentSender').e;
-    let date = new Date();
-    let author = form.querySelector('author').value;
-    let text = form.querySelector('text').value;
-    let foo = 'text';
-    /*$.ajax({
+function sendForm(sendResult, commentSender, url) {
+    $.ajax({
         url: url,
         type: "POST",
         dataType: "html",
@@ -33,7 +28,7 @@ function sendForm() {
     	error: function(response) {
             $('#sendResult').html('Ошибка. Комментарий не отправлен');
     	}
- 	});*/
+ 	});
 }
 
 

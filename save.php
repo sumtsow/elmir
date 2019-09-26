@@ -2,9 +2,7 @@
 
 require_once 'classes/Comment.php';
 
-if (isset($_POST['post_id']) &&
-    isset($_POST['author']) &&
-    isset($_POST['text']))
+if (isset($_POST['post_id'], $_POST['author'], $_POST['text']))
 {
 
     $post_id = filter_input(INPUT_POST, 'post_id', FILTER_SANITIZE_NUMBER_INT);
@@ -19,14 +17,14 @@ if (isset($_POST['post_id']) &&
     $comment->__set('post_id', $post_id);
     $comment->__set('author', $author);
     $comment->__set('text', $text);
-    $save = $comment->save();
+    //$save = $comment->save();
     
     $result = [
         'author' => $author,
         'text' => $text,
         'ip' => $comment->getIP(),
         'created_at' => $comment->getCreatedAt(),
-    ]; 
+    ];
 
     echo json_encode($result);
 

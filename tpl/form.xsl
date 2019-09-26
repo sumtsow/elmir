@@ -17,7 +17,7 @@
                 <textarea class="form-control" name="text" id="text" />
             </div>
             <input type="hidden" name="post_id" value="{post/id}"/>            
-            <input type="submit" id="btn" class="btn btn-dark" value="Save" />
+            <input type="submit" id="btn" class="btn btn-dark" value="Save" onClick="sendForm();" />
         </form>
         <div id="sendResult"></div>
         <!-- Form end -->

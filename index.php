@@ -8,7 +8,11 @@ $xml = Post::postsAsXml($page);
 
 $xslt = new xsltProcessor;
 
-$xslt->importStyleSheet(DomDocument::load('tpl/posts.xsl'));
+$doc = new DOMDocument();
+
+$doc->load('tpl/posts.xsl');
+
+$xslt->importStyleSheet($doc);
 
 $output = $xslt->transformToXML($xml);
 
