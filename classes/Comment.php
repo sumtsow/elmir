@@ -1,6 +1,7 @@
 <?php
 
 require_once 'DBConnect.php';
+require_once 'Post.php';
 
 /**
  * The Comment Model Class
@@ -70,7 +71,7 @@ class Comment {
             $sth->bindParam(2, $this->author, PDO::PARAM_STR, 128);
             $sth->bindParam(3, $this->text, PDO::PARAM_STR);
             $sth->bindParam(4, $this->ip, PDO::PARAM_STR, 16);             
-            $sth->bindParam(5, $this->created_at);
+            $sth->bindParam(5, $this->created_at, PDO::PARAM_STR, 19);
             return $sth->execute();
         }
         
@@ -86,11 +87,12 @@ class Comment {
     }
         
     /**
-     * @return DateTime Comment creation date&time
+     * @return string formatted Comment creation date&time
      */
     public function getCreatedAt()
     {
-        return $this->created_at;
+        $dateTime = date_create($this->created_at);
+        return date_format($dateTime, 'd.m.Y H:i:s');
     }
     
     /**
@@ -98,7 +100,7 @@ class Comment {
      * set specified attribute to value
      * @param string $attr attribute name
      * @param string $value attribute value
-     * @return boolean TRUE if set or FALSE otherwise
+     * @return boolean TRUE if set or string otherwise
      */
     public function __set($attr, $value)
     {
@@ -108,7 +110,63 @@ class Comment {
             $this->$attr = $value;
             $result = true;
         }
-        
+        return $result;
+    }
+    
+    /**
+     * validate input data
+     * @param string $attr attribute name
+     * @param string $value attribute value
+     * @return true if validated or error message otherwise
+     */
+    public function validate($attr, $value)
+    {
+        switch ($attr) {
+            
+            case 'post_id':
+                
+                if(Post::exists($value)) {
+                    $result = true;
+                }
+                else {
+                    $result = 'Пост не найден!';
+                }
+                break;
+                
+            case 'author':
+                $valid = filter_var(
+                    $value,
+                    FILTER_VALIDATE_REGEXP,
+                    ['options'=>
+                        ['regexp' => '/^[a-zA-Z0-9]+([_ -]?[a-zA-Z0-9])*$/']
+                    ]
+                );
+                if(!$valid) {
+                    $result = 'Недопустимые символы в имени автора! Допускаются буквы, цифры, "_", "-" и " " (пробел)';
+                }
+                else {
+                    if(strlen($value) > 0 && strlen($value) < 129) {
+                    $result = true;
+                    }
+                    else {
+                        $result = 'Недопустимая длина имени автора! Допускается от 1 до 128 символов';
+                    }
+                }
+                break;
+            
+            case 'text':
+                $value = filter_var($value, FILTER_SANITIZE_STRING);
+                if(strlen($value) > 0 && strlen($value) < 65536) {
+                    $result = true;
+                }
+                else {
+                    $result = 'Недопустимая длина сообщения! Допускается от 1 до 65535 символов';
+                }
+                break;
+                
+            default :
+               $result = false;
+        }
         return $result;
     }
 }

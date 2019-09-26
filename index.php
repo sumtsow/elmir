@@ -2,9 +2,16 @@
 
 require_once 'classes/Post.php';
 
-$page = (isset($_GET['page'])) ? filter_input(INPUT_GET, 'page', FILTER_SANITIZE_NUMBER_INT) : 0;
+$page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_NUMBER_INT);
+
+$page = (isset($page)) ? $page : 0;
 
 $xml = Post::postsAsXml($page);
+
+if(($xml->count / $xml->itemsPerPage < $page) || $page < 0) {
+    header('Location: /errors/404.html');
+    exit;
+}
 
 $xslt = new xsltProcessor;
 

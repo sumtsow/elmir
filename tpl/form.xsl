@@ -6,8 +6,8 @@
     
     <xsl:template name="form">
         <!-- Form -->
-        <h4 class="h4">Оставить комментарий </h4>
-        <form method="post" action="" id="commentSender">
+        <h4 class="h4">Оставить комментарий</h4>
+        <form id="commentSender">
             <div class="form-group">
                 <label for="author">Ваше имя: </label>
                 <input type="text" class="form-control" name="author" id="author" />
@@ -17,10 +17,11 @@
                 <textarea class="form-control" name="text" id="text" />
             </div>
             <input type="hidden" name="post_id" value="{post/id}"/>            
-            <input type="submit" id="btn" class="btn btn-dark" value="Save" onClick="sendForm();" />
         </form>
-        <div id="sendResult"></div>
-        <!-- Form end -->
+        <!-- Form end -->        
+        <div id="sendResult" role="alert"></div>
+        <div id="sendError" role="alert"></div>
+        <button id="btn" class="btn btn-dark" onClick="sendForm();" >Save</button>     
     </xsl:template>
     
 </xsl:stylesheet>

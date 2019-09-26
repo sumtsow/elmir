@@ -44,8 +44,8 @@ class Post {
         if($id)
         {
             $dbh = new DBConnect();
-            $sth = $dbh->prepare('SELECT * FROM `posts` WHERE `id`="' . $id . '"');
-            $sth->execute();
+            $sth = $dbh->prepare('SELECT * FROM `posts` WHERE `id`=?');
+            $sth->execute([$id]);
             $result = $sth->fetch(PDO::FETCH_ASSOC);
             $this->id = $result['id'];
             $this->title = $result['title'];
@@ -71,7 +71,10 @@ class Post {
         $postsNum = self::count();
         $offset = ($page * $itemsPerPage < $postsNum) ? $page * $itemsPerPage : 0;
         $dbh = new DBConnect();
-        $sth = $dbh->prepare('SELECT * FROM `posts` ORDER BY `created_at` DESC LIMIT '.$itemsPerPage.' OFFSET '.$offset);
+        //$sth = $dbh->prepare('SELECT * FROM `posts` ORDER BY `created_at` DESC LIMIT ? OFFSET ?');
+        $sth = $dbh->prepare('SELECT *, (SELECT COUNT(*) FROM `comments` WHERE `post_id` = `posts`.`id`) comments FROM `posts` ORDER BY `created_at` DESC LIMIT ? OFFSET ?');
+        $sth->bindParam(1, intval($itemsPerPage), PDO::PARAM_INT);
+        $sth->bindParam(2, $offset, PDO::PARAM_INT);
         $sth->execute();
         $result = $sth->fetchAll(PDO::FETCH_ASSOC);
         return $result;
@@ -101,7 +104,6 @@ class Post {
     {
         $settings = DBConnect::getConfig();
         $itemsPerPage = $settings['db']['itemsPerPage'];
-        $commentsNum = self::getCommentNumber();
         $xml = new SimpleXMLElement('<posts/>');
         $xml->addChild('page', $page);
         $xml->addChild('count', self::count());
@@ -114,14 +116,13 @@ class Post {
                 }                
                 $xmlPost->addChild($key, $value);
             }
-            (array_key_exists($post['id'], $commentsNum)) ? $xmlPost->addChild('comments', $commentsNum[$post['id']]) : $xmlPost->addChild('comments', 0);
         }
         return $xml;
     }
     
     /**
      * read Post from database and
-     * add all Comments  to Post 
+     * add all Comments to Post 
      * converts 2-dimentional array of Comments to Xml
      * @return SimpleXMLElement
      */
@@ -143,36 +144,34 @@ class Post {
     }
     
     /**
-     * reads Post's children Comments number
-     * @return array of Post's children Comments number
-     */
-    public static function getCommentNumber()
-    {
-        $dbh = new DBConnect();
-        $sth = $dbh->prepare('SELECT `post_id`, COUNT(*) FROM `comments` GROUP BY `post_id`;');
-        $sth->execute();
-        $result = $sth->fetchAll(PDO::FETCH_ASSOC);
-        foreach($result as $row)
-        {
-            $commentNumber[$row['post_id']] = $row['COUNT(*)'];
-        }
-        return $commentNumber;
-    }
-    
-    /**
      * read Post's children Comments from database
      * @return array of Comments
      */
     public function comments()
     {
         $dbh = new DBConnect();
-        $sth = $dbh->prepare('SELECT * FROM `comments` WHERE `post_id` = "' . $this->id . '" ORDER BY `created_at` DESC');
-        $sth->execute();
+        $sth = $dbh->prepare('SELECT * FROM `comments` WHERE `post_id` = ? ORDER BY `created_at` DESC');
+        $sth->execute([$this->id]);
         $result = $sth->fetchAll(PDO::FETCH_ASSOC);
         foreach($result as $key => $comment) {
             $result[$key]['text'] = nl2br($result[$key]['text'], true);
         }
         return $result;
+    }
+    
+    /**
+     * check the Post ID exists in database
+     * @param integer $id the Post ID
+     * @return boolean
+     */
+    public static function exists($id)
+    {
+        $dbh = new DBConnect();
+        $sth = $dbh->prepare('SELECT `id` FROM `posts` WHERE `id` = ? LIMIT 1');
+        $sth->execute([$id]);
+        $result = $sth->fetch(PDO::FETCH_NUM);
+        ($result[0]) ? $exists = true : $exists = false;
+        return $exists;
     }
     
     /**
@@ -192,5 +191,4 @@ class Post {
             return false;
         }
     }
-   
 }

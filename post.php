@@ -2,12 +2,7 @@
 
 require_once 'classes/Post.php';
 
-$id = (isset($_GET['id'])) ? filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT) : 0;
-
-if(!$id) {
-    header('Location: /');
-    exit;
-}
+$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 
 $post = new Post($id);
 
