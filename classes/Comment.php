@@ -134,33 +134,45 @@ class Comment {
                 break;
                 
             case 'author':
-                $valid = filter_var(
-                    $value,
-                    FILTER_VALIDATE_REGEXP,
-                    ['options'=>
-                        ['regexp' => '/^[a-zA-Z0-9]+([_ -]?[a-zA-Z0-9])*$/']
-                    ]
-                );
-                if(!$valid) {
-                    $result = 'Недопустимые символы в имени автора! Допускаются буквы, цифры, "_", "-" и " " (пробел)';
+                if(!$value) {
+                    $valid = false;
+                    $result = 'Пустое поле "Ваше имя:"';
                 }
                 else {
-                    if(strlen($value) > 0 && strlen($value) < 129) {
-                    $result = true;
+                    $valid = filter_var(
+                        $value,
+                        FILTER_VALIDATE_REGEXP,
+                        ['options'=>
+                            ['regexp' => '/^[a-zA-Z0-9]+([_ -]?[a-zA-Z0-9])*$/']
+                        ]
+                    );
+                    if(!$valid) {
+                        $result = 'Недопустимые символы в имени автора! Допускаются буквы, цифры, "_", "-" и " " (пробел)';
                     }
                     else {
-                        $result = 'Недопустимая длина имени автора! Допускается от 1 до 128 символов';
+                        if(strlen($value) > 0 && strlen($value) < 129) {
+                        $result = true;
+                        }
+                        else {
+                            $result = 'Недопустимая длина имени автора! Допускается от 1 до 128 символов';
+                        }
                     }
                 }
                 break;
             
             case 'text':
-                $value = filter_var($value, FILTER_SANITIZE_STRING);
-                if(strlen($value) > 0 && strlen($value) < 65536) {
-                    $result = true;
+                if(!$value) {
+                    $valid = false;
+                    $result = 'Пустое поле "Ваш комментарий:"';
                 }
                 else {
-                    $result = 'Недопустимая длина сообщения! Допускается от 1 до 65535 символов';
+                    $value = filter_var($value, FILTER_SANITIZE_STRING);
+                    if(strlen($value) > 0 && strlen($value) < 65536) {
+                        $result = true;
+                    }
+                    else {
+                        $result = 'Недопустимая длина сообщения! Допускается от 1 до 65535 символов';
+                    }
                 }
                 break;
                 

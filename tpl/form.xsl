@@ -7,8 +7,8 @@
     <xsl:template name="form">
         <!-- Form -->
         <h4 class="h4">Оставить комментарий</h4>
-        <form id="commentSender">
-            <div class="form-group">
+        <form id="commentSender" onkeydown="return event.key != 'Enter';">
+            <div class="form-group" onsubmit="return false;">
                 <label for="author">Ваше имя: </label>
                 <input type="text" class="form-control" name="author" id="author" />
             </div>            
