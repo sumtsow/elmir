@@ -49,7 +49,7 @@
             </div>              
         </div>
     </div>
-    <h6 class="h6">
+    <h6 class="h6" id="commentsNum">
         <xsl:text> Комментариев: </xsl:text>
         <xsl:apply-templates select="@comments" />
     </h6>    
