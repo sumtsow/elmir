@@ -16,12 +16,12 @@
                 <label for="text">Ваш комментарий: </label>
                 <textarea class="form-control" name="text" id="text" />
             </div>
-            <input type="hidden" name="post_id" value="{post/id}"/>            
+            <input type="hidden" name="post_id" value="{post/@id}"/>            
         </form>
         <!-- Form end -->        
         <div id="sendResult" role="alert"></div>
         <div id="sendError" role="alert"></div>
-        <button id="btn" class="btn btn-dark" onClick="sendForm();" >Save</button>     
+        <button id="btn" class="btn btn-dark" onClick="sendForm();" >Отправить</button>     
     </xsl:template>
     
 </xsl:stylesheet>

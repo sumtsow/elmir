@@ -6,9 +6,11 @@ $page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_NUMBER_INT);
 
 $page = (isset($page)) ? $page : 0;
 
-$xml = Post::postsAsXml($page);
+$dom = Post::postsAsDOM($page);
 
-if(($xml->count / $xml->itemsPerPage < $page) || $page < 0) {
+$postsElement = $dom->getElementsByTagName('posts')->item(0);
+
+if(($postsElement->getAttribute('count') / $postsElement->getAttribute('itemsPerPage') < $page) || $page < 0) {
     header('Location: /errors/404.html');
     exit;
 }
@@ -21,6 +23,6 @@ $doc->load('tpl/posts.xsl');
 
 $xslt->importStyleSheet($doc);
 
-$output = $xslt->transformToXML($xml);
+$output = $xslt->transformToXML($dom);
 
 echo str_replace("&lt;br /&gt;","<br />",$output);

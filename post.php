@@ -11,8 +11,8 @@ if(!$post->id) {
     exit;
 }
 
-$xml = $post->asXml();
-
+$dom = $post->asDOM();
+        
 $xslt = new xsltProcessor;
 
 $doc = new DOMDocument();
@@ -21,6 +21,6 @@ $doc->load('tpl/post.xsl');
 
 $xslt->importStyleSheet($doc);
 
-$output = $xslt->transformToXML($xml);
+$output = $xslt->transformToXML($dom);
 
 echo str_replace("&lt;br /&gt;","<br />",$output);

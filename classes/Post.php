@@ -64,14 +64,14 @@ class Post {
      * read  $itemsPerPage Posts from database
      * @param integer $page current page number
      * @param integer $itemsPerPage page size
-     * @return array of Posts
+     * @return array of Posts 
+     * with Comment Number to each Post as 'comments'
      */
     public static function all($page = null, $itemsPerPage = 10)
     {
         $postsNum = self::count();
         $offset = ($page * $itemsPerPage < $postsNum) ? $page * $itemsPerPage : 0;
         $dbh = new DBConnect();
-        //$sth = $dbh->prepare('SELECT * FROM `posts` ORDER BY `created_at` DESC LIMIT ? OFFSET ?');
         $sth = $dbh->prepare('SELECT *, (SELECT COUNT(*) FROM `comments` WHERE `post_id` = `posts`.`id`) comments FROM `posts` ORDER BY `created_at` DESC LIMIT ? OFFSET ?');
         $sth->bindParam(1, intval($itemsPerPage), PDO::PARAM_INT);
         $sth->bindParam(2, $offset, PDO::PARAM_INT);
@@ -94,53 +94,102 @@ class Post {
 
     /**
      * read $itemsPerPage Posts from database and
-     * converts 2-dimentional array of Posts to Xml
-     * add Comments number to each Post
+     * copy Post attributes to DOMAttributes
+     * add Comments Number to each Post as 'comments' DOMAttribute
      * @param int $page
      * 
-     * @return SimpleXMLElement
+     * @return DOMDocument
      */
-    public static function postsAsXml($page = null)
+    public static function postsAsDOM($page = null)
     {
         $settings = DBConnect::getConfig();
         $itemsPerPage = $settings['db']['itemsPerPage'];
-        $xml = new SimpleXMLElement('<posts/>');
-        $xml->addChild('page', $page);
-        $xml->addChild('count', self::count());
-        $xml->addChild('itemsPerPage', $itemsPerPage);
+
+        $domDocument = new DOMDocument();
+        $domRoot = $domDocument->createElement('posts');
+        
+        $id = $domDocument->createAttribute('id');
+        $id->value = 'posts';
+        $domRoot->appendChild($id);
+        $domDocument->appendChild($domRoot);
+        
+        $pageAttr = $domDocument->createAttribute('page');
+        $pageAttr->value = $page;
+        $domRoot->appendChild($pageAttr);
+        
+        $count = $domDocument->createAttribute('count');
+        $count->value = self::count();
+        $domRoot->appendChild($count);
+       
+        $itemsAttr = $domDocument->createAttribute('itemsPerPage');
+        $itemsAttr->value = $itemsPerPage;
+        $domRoot->appendChild($itemsAttr);
+
         foreach (self::all($page, $itemsPerPage) as $post) {
-            $xmlPost = $xml->addChild('post');
+            $domElement = $domDocument->createElement('post');
             foreach ($post as $key => $value) {
-                if($key == 'text') {
-                    $value = nl2br($value, true);
+                if($key == 'created_at') {
+                    $value = self::getFormattedDateTime($value);
                 }                
-                $xmlPost->addChild($key, $value);
+                elseif($key == 'text') {
+                    $value = nl2br($value, true);
+                }
+                $domAttribute = $domDocument->createAttribute($key);
+                $domAttribute->value = $value;
+                $domElement->appendChild($domAttribute);
             }
+            $domRoot->appendChild($domElement);
+            
         }
-        return $xml;
+        return $domDocument;
     }
     
     /**
      * read Post from database and
-     * add all Comments to Post 
-     * converts 2-dimentional array of Comments to Xml
-     * @return SimpleXMLElement
+     * add all own Comments to Post 
+     * copy Post attributes to DOMAttributes
+     * @return DOMDocument
      */
-    public function asXml()
+    public function asDOM()
     {
-        $xml = new SimpleXMLElement('<post/>');
-        $xml->addChild('id', $this->id);
-        $xml->addChild('title', $this->title);
-        $xml->addChild('text', $this->text);
-        $xml->addChild('created_at', $this->created_at);
-        $xml->addChild('comments', count($this->comments));
+        $domDocument = new DOMDocument();
+        
+        $domRoot = $domDocument->createElement('post');
+      
+        $id = $domDocument->createAttribute('id');
+        $id->value = $this->id;
+        $domRoot->appendChild($id);
+        $domDocument->appendChild($domRoot);
+        
+        $title = $domDocument->createAttribute('title');
+        $title->value = $this->title;
+        $domRoot->appendChild($title);
+        
+        $text = $domDocument->createAttribute('text');
+        $text->value = $this->text;
+        $domRoot->appendChild($text);        
+
+        $created_at = $domDocument->createAttribute('created_at');
+        $created_at->value = self::getFormattedDateTime($this->created_at);
+        $domRoot->appendChild($created_at);  
+
+        $comments = $domDocument->createAttribute('comments');
+        $comments->value = count($this->comments);
+        $domRoot->appendChild($comments);
+        
         foreach ($this->comments as $comment) {
-            $xmlComment = $xml->addChild('comment');           
+            $domElement = $domDocument->createElement('comment');
             foreach ($comment as $key => $value) {
-                 $xmlComment->addChild($key, $value);
+                if($key == 'created_at') {
+                    $value = self::getFormattedDateTime($value);
+                }                
+                $domAttribute = $domDocument->createAttribute($key);
+                $domAttribute->value = $value;
+                $domElement->appendChild($domAttribute);
             }
+            $domRoot->appendChild($domElement);
         }
-        return $xml;
+        return $domDocument;
     }
     
     /**
@@ -190,5 +239,14 @@ class Post {
         {
             return false;
         }
+    }
+    
+    /**
+     * @return string localized formatted DateTime
+     */
+    public static function getFormattedDateTime($dateTime)
+    {
+        $dateTime = date_create($dateTime);
+        return date_format($dateTime, 'd.m.Y H:i:s');
     }
 }

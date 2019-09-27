@@ -4,12 +4,9 @@ require_once 'classes/Comment.php';
 
 if (isset($_POST['post_id'], $_POST['author'], $_POST['text']))
 {
-
     $post_id = filter_input(INPUT_POST, 'post_id', FILTER_SANITIZE_NUMBER_INT);
     $author  = filter_input(INPUT_POST, 'author');
     $text  = filter_input(INPUT_POST, 'text');    
-    //$text  = filter_input(INPUT_POST, 'text', FILTER_SANITIZE_ENCODED);
-
     
     $comment = new Comment();
     
